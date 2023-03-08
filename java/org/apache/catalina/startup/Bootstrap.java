@@ -261,6 +261,7 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Loading startup class");
         }
+        // 通过catalina类加载器，将Catalina类加载进JVM，然后实例化一个catalina对象
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -268,6 +269,8 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Setting startup class properties");
         }
+
+        // 调用catalina对象的setParentClassLoader方法
         String methodName = "setParentClassLoader";
         Class<?> paramTypes[] = new Class[1];
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
@@ -277,6 +280,7 @@ public final class Bootstrap {
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
 
+        // 将catalina赋值给全局引用catalinaDaemon。
         catalinaDaemon = startupInstance;
     }
 
@@ -287,6 +291,7 @@ public final class Bootstrap {
     private void load(String[] arguments) throws Exception {
 
         // Call the load() method
+        // 这里主要是封装参数
         String methodName = "load";
         Object param[];
         Class<?> paramTypes[];
@@ -299,6 +304,8 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
+
+        // 以上面分装的参数，调用catalina对象的load方法
         Method method =
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled()) {
@@ -442,24 +449,29 @@ public final class Bootstrap {
         synchronized (daemonLock) {
             if (daemon == null) {
                 // Don't set daemon until init() has completed
+                // 实例化一个Bootstrap引导类（本类）对象
                 Bootstrap bootstrap = new Bootstrap();
                 try {
+                    // 执行初始化方法 点进去看看（发现他的核心逻辑是创建一个catalina对象，赋值给全局引用catalinaDaemon）
                     bootstrap.init();
                 } catch (Throwable t) {
                     handleThrowable(t);
                     t.printStackTrace();
                     return;
                 }
+                // 将本类对象赋值给daemon
                 daemon = bootstrap;
             } else {
                 // When running as a service the call to stop will be on a new
                 // thread so make sure the correct class loader is used to
                 // prevent a range of class not found exceptions.
+                // 设置一个线程上下文类加载器
                 Thread.currentThread().setContextClassLoader(daemon.catalinaLoader);
             }
         }
 
         try {
+            // 判断启动命令，选择分支逻辑，默认情况下就是启动（start）
             String command = "start";
             if (args.length > 0) {
                 command = args[args.length - 1];
@@ -473,9 +485,10 @@ public final class Bootstrap {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
-                daemon.setAwait(true);
-                daemon.load(args);
-                daemon.start();
+                // 所以会来到这
+                daemon.setAwait(true); // daemon是本类对象
+                daemon.load(args); // 真正的初始化（catalina的初始化）。点进去看看
+                daemon.start(); // 真正的启动（catalina的启动，最终会监听端口等待请求）。点进去看看
                 if (null == daemon.getServer()) {
                     System.exit(1);
                 }
