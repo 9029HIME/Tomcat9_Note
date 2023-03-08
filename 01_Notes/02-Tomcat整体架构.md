@@ -23,3 +23,11 @@ Connector（抽象为Coyote）完成HTTP服务器功能，Container（抽象为C
 而Coyote又能拆分出EndPoint、Processor、Adapter这3个组件。EndPoint和Processor可以抽象理解为ProtocolHandler，用来处理外部请求并解析。EndPoint通过NIO模型，进行Socket通信，基于TCP/IP协议解析外部的TCP请求。在EndPoint层面，可以通过APR实现自定义IO模型处理，这部分属于自定义调优层面，这里不展开讲。Processor基于HTTP协议，将EndPoint的TCP请求解析为HTTP请求，将HTTP请求包装成Request、Response这两个对象，交给Adapater进行处理。
 
 Adapter将Request、Repsonse再进行封装，形成ServletRequest、ServletResponse对象，也就是Servlet方法上的那2个参数，交给Servlet容器处理，得到响应，最终逐层返回给客户端。
+
+# LifeCycle
+
+上面介绍了Tomcat各个组件，Tomcat在启动的时候需要对这些组件进行初始化操作，既然是初始化就肯定伴随着组件的生命周期。Tomcat里面这么多组件，为了统一规范它们的生命周期，Tomcat将生命周期抽象为org.apache.catalina.Lifecycle这个接口：
+
+![image-20230306131730617](02-Tomcat整体架构.assets/03.png)
+
+这个接口定义了组件各个生命周期调用的方法，其中就包含了上面说的Connector、Container以及Container下的Engine、Host、Context、Wrapper。
