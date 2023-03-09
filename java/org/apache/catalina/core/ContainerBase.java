@@ -822,12 +822,16 @@ public abstract class ContainerBase extends LifecycleMBeanBase implements Contai
 
     @Override
     protected void initInternal() throws LifecycleException {
+        /*
+         注册初始化线程池，注意！！！这个StartStop线程池不是接收外部请求的工作线程池，而是用在engine.start()阶段，给不同host初始化用的。
+         在多host场景，可以提高host的初始化效率。
+         */
         reconfigureStartStopExecutor(getStartStopThreads());
-        super.initInternal();
+        super.initInternal(); // 初始化
     }
 
 
-    private void reconfigureStartStopExecutor(int threads) {
+    private void reconfigureStartStopExecutor(int threads) { //
         if (threads == 1) {
             // Use a fake executor
             if (!(startStopExecutor instanceof InlineExecutorService)) {

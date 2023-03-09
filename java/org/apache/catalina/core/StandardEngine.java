@@ -226,7 +226,7 @@ public class StandardEngine extends ContainerBase implements Engine {
         // Ensure that a Realm is present before any attempt is made to start
         // one. This will create the default NullRealm if necessary.
         getRealm();
-        super.initInternal();
+        super.initInternal(); //调用ContainerBase的initInternal，完成容器的初始化。
     }
 
 

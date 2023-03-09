@@ -72,7 +72,7 @@ package org.apache.catalina;
  * try to stop all sub-components - even those it didn't start.
  *
  * Attempting any other transition will throw {@link LifecycleException}.
- *
+ *4
  * </pre>
  * The {@link LifecycleEvent}s fired during state changes are defined in the
  * methods that trigger the changed. No {@link LifecycleEvent}s are fired if the

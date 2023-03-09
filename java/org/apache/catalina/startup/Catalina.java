@@ -614,6 +614,7 @@ public class Catalina {
                     digester.startGeneratingCode();
                     generateClassHeader(digester, start);
                 }
+                // 在这一步将配置文件解析成server对象
                 digester.parse(inputSource);
                 if (generateCode) {
                     generateClassFooter(digester);
@@ -705,9 +706,9 @@ public class Catalina {
         // Before digester - it may be needed
         initNaming();
 
-        // Parse main server.xml
+        // Parse main server.xml 解析server.xml，获取配置，解server对象
         parseServerXml(true);
-        Server s = getServer();
+        Server s = getServer();// 将刚才解析产生的server对象，赋值给Server s引用
         if (s == null) {
             return;
         }
@@ -721,7 +722,7 @@ public class Catalina {
 
         // Start the new server
         try {
-            getServer().init();
+            getServer().init(); // 初始化server（基于LifeCycle）
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
                 throw new java.lang.Error(e);

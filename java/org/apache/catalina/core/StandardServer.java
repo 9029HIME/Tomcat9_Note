@@ -1029,7 +1029,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         }
         // Initialize our defined Services
         for (Service service : services) {
-            service.init();
+            service.init(); // 循环service，调用StandardService的init方法，由回到LifeCycle的init()方法
         }
     }
 
