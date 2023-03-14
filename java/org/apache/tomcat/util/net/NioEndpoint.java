@@ -228,7 +228,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel,SocketChannel> 
      */
     @Override
     public void bind() throws Exception {
-        initServerSocket();
+        initServerSocket(); // 创建NIO连接，绑定端口
 
         setStopLatch(new CountDownLatch(1));
 
@@ -270,10 +270,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel,SocketChannel> 
                 }
             }
         } else {
-            serverSock = ServerSocketChannel.open();
+            serverSock = ServerSocketChannel.open(); // 默认会走到这，接下来就是NIO的基础部分了，开启一个ServerSocketChannel，绑定端口
             socketProperties.setProperties(serverSock.socket());
             InetSocketAddress addr = new InetSocketAddress(getAddress(), getPortWithOffset());
-            serverSock.bind(addr, getAcceptCount());
+            serverSock.bind(addr, getAcceptCount()); // 绑定完成后，Tomcat的初始化阶段就算结束了，TODO 接下来交给启动阶段监听端口。
         }
         serverSock.configureBlocking(true); //mimic APR behavior
     }

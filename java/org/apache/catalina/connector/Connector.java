@@ -980,7 +980,7 @@ public class Connector extends LifecycleMBeanBase {
         }
 
         // Initialize adapter
-        adapter = new CoyoteAdapter(this);
+        adapter = new CoyoteAdapter(this); // 创建Adapter，它的作用是将Request和Response转换为ServletRequest和ServletResponse
         protocolHandler.setAdapter(adapter);
         if (service != null) {
             protocolHandler.setUtilityExecutor(service.getServer().getUtilityExecutor());
@@ -1009,7 +1009,7 @@ public class Connector extends LifecycleMBeanBase {
         }
 
         try {
-            protocolHandler.init();
+            protocolHandler.init(); // EndPoint组件和Processor的初始化，它们的作用是监听外部请求，将TCP报文转成HTTP报文。
         } catch (Exception e) {
             throw new LifecycleException(sm.getString("coyoteConnector.protocolHandlerInitializationFailed"), e);
         }

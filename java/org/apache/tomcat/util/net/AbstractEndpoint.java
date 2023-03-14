@@ -1299,7 +1299,7 @@ public abstract class AbstractEndpoint<S,U> {
 
     private void bindWithCleanup() throws Exception {
         try {
-            bind();
+            bind(); // 基于NIO绑定端口
         } catch (Throwable t) {
             // Ensure open sockets etc. are cleaned up if something goes
             // wrong during bind
@@ -1312,7 +1312,7 @@ public abstract class AbstractEndpoint<S,U> {
 
     public final void init() throws Exception {
         if (bindOnInit) {
-            bindWithCleanup();
+            bindWithCleanup(); // 绑定端口
             bindState = BindState.BOUND_ON_INIT;
         }
         if (this.domain != null) {
